@@ -1,15 +1,34 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./RegisterStyle.scss";
+import { registerRoute } from "../utils/APIRoutes";
+import { getData } from "../utils/APIService";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function Register() {
+  const nav = useNavigate();
   const [values, setVales] = useState({
-    username: "",
+    name: "",
     email: "",
     password: "",
-    confirmedPassword: "",
+    confirm_password: "",
   });
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const res = await getData(registerRoute, values);
+    if (res.status === 200) {
+      for (const key in res.errors) {
+        toast.error(res.errors[key].msg, {
+          position: "bottom-right",
+          autoClose: 8000,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "dark",
+        });
+      }
+    } else {
+      nav("/login");
+    }
   };
   const handleChange = (e) => {
     setVales({ ...values, [e.target.name]: e.target.value });
@@ -21,7 +40,7 @@ export default function Register() {
           <input
             type="text"
             placeholder="Username"
-            name="username"
+            name="name"
             onChange={handleChange}
           />
           <input
@@ -39,7 +58,7 @@ export default function Register() {
           <input
             type="password"
             placeholder="Confirmed Password"
-            name="confirmedPassword"
+            name="confirm_password"
             onChange={handleChange}
           />
           <button type="submit">Create Account</button>
@@ -48,6 +67,7 @@ export default function Register() {
           </span>
         </form>
       </div>
+      <ToastContainer />
     </>
   );
 }
