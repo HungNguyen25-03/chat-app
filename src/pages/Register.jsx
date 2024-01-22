@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./RegisterStyle.scss";
 import { registerRoute } from "../utils/APIRoutes";
-import { getData } from "../utils/APIService";
+import { register } from "../utils/APIService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function Register() {
@@ -15,8 +15,11 @@ export default function Register() {
   });
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await getData(registerRoute, values);
+    const res = await register(registerRoute, values);
     if (res.status === 200) {
+      alert("Account Created Successfully");
+      nav("/login");
+    } else {
       for (const key in res.errors) {
         toast.error(res.errors[key].msg, {
           position: "bottom-right",
@@ -26,8 +29,6 @@ export default function Register() {
           theme: "dark",
         });
       }
-    } else {
-      nav("/login");
     }
   };
   const handleChange = (e) => {
